@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌿 Garden Manager — Your Garden, Digitized
 
-## Getting Started
+Whether it's a small balcony, a backyard garden, or a full farmland —
+plan, buy, and manage any outdoor space in one place.
 
-First, run the development server:
+## 💡 The Idea
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Digitize your outdoor space, virtually arrange plants and tools,
+and connect directly to purchase — all in one service.
+No matter the size or type of your space,
+anyone can build and manage their own digital garden.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Core Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Digitize Your Space
+- Register your space by entering dimensions or uploading a photo
+- Works for any outdoor space — no size or type restrictions
+- Visualize your space as an interactive digital garden simulation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Place & Buy Plants and Tools
+- Mark existing plants directly on your digital map
+- Virtually arrange items from the catalog, then purchase instantly
+- Shop for: plants, flowers, fences, watering cans, stones, pesticides, and more
 
-## Learn More
+### 3. Personalized Care Alerts
+- Care tips based on plant type + local climate data
+- Reminders for watering, fertilizing, pruning, and more
+- Natural disaster alerts (cold snaps, heatwaves, typhoons, etc.)
 
-To learn more about Next.js, take a look at the following resources:
+### 4. AI Plant Care Agent
+- Chat with an in-app AI agent specialized in plant care
+- Answers personalized to your garden's actual data
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🗺️ Development Roadmap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Phase 1 — Space Digitization
+- [x] Space input UI (width, height, shape)
+- [ ] Photo upload for space recognition (manual input first)
+- [x] Build interactive garden simulation
 
-## Deploy on Vercel
+### Phase 2 — Placement & Commerce
+- [x] Build plant and tool catalog
+- [x] Drag-and-drop virtual placement feature
+- [ ] Plant compatibility info (good neighbors vs. bad neighbors)
+- [ ] Placement → purchase flow (external links first, own commerce later)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Phase 3 — Care & Alerts
+- [ ] Integrate regional climate data API
+- [ ] Personalized care reminders per plant (watering, fertilizing, etc.)
+- [ ] Natural disaster preparation alerts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Phase 4 — AI Agent
+- [ ] AI Q&A based on user's garden data
+- [ ] Claude API integration
+
+### Phase 5 — Scale Up
+- [ ] Mobile app launch
+- [ ] Build own commerce platform
+
+## 🛠️ Planned Stack
+- Space simulation: Canvas / WebGL
+- Climate data: Korea Meteorological Administration API
+- AI agent: Claude API
+- Commerce: External API → own platform
