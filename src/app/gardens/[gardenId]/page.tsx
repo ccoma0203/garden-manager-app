@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { GardenEditorWorkspace } from "@/components/garden/GardenEditorWorkspace";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ButtonLink } from "@/components/ui/button-link";
+import { useCustomPlants } from "@/hooks/useCustomPlants";
 import { useGardenEditor } from "@/hooks/useGardenEditor";
 
 export default function GardenEditorPage() {
@@ -17,7 +18,9 @@ export default function GardenEditorPage() {
     storageError,
     justSaved,
     updateItems,
+    updateZones,
   } = useGardenEditor({ gardenId });
+  const { customPlants, savePlant, removePlant } = useCustomPlants();
 
   if (isLoading) {
     return (
@@ -66,7 +69,11 @@ export default function GardenEditorPage() {
         <GardenEditorWorkspace
           garden={garden}
           onItemsChange={updateItems}
+          onZonesChange={updateZones}
           justSaved={justSaved}
+          customPlants={customPlants}
+          onSaveCustomPlant={savePlant}
+          onDeleteCustomPlant={removePlant}
         />
       </main>
     </div>

@@ -1,17 +1,40 @@
+import { DEFAULT_ZONE_COLOR_ID } from "@/lib/garden/zones";
 import {
   DEFAULT_LENGTH_UNIT,
   type Garden,
   type GardenDimensions,
   type GardenShape,
+  type BedType,
+  type BorderStyle,
+  type GardenZone,
   type GridPosition,
   type LengthUnit,
   type PlacedItem,
   type PlacedItemKind,
+  type ZoneColorId,
 } from "@/types/garden";
+import type { TreeGrowthStage } from "@/types/plant";
+
+const VALID_TREE_STAGES: TreeGrowthStage[] = ["seedling", "young", "mature"];
 
 const VALID_SHAPES: GardenShape[] = ["rectangle", "l-shape", "custom"];
 const VALID_UNITS: LengthUnit[] = ["m", "cm"];
 const VALID_KINDS: PlacedItemKind[] = ["plant", "tool"];
+const VALID_ZONE_COLORS: ZoneColorId[] = [
+  "emerald",
+  "amber",
+  "sky",
+  "rose",
+  "violet",
+  "lime",
+];
+const VALID_BED_TYPES: BedType[] = ["vegetable", "flower", "tree"];
+const VALID_BORDER_STYLES: BorderStyle[] = [
+  "default",
+  "wooden_fence",
+  "brick_wall",
+  "stone_edge",
+];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -66,7 +89,62 @@ function parsePlacedItem(value: unknown): PlacedItem | null {
     item.rotation = value.rotation;
   }
 
+  if (value.growthStage !== undefined) {
+    if (
+      typeof value.growthStage !== "string" ||
+      !VALID_TREE_STAGES.includes(value.growthStage as TreeGrowthStage)
+    ) {
+      return null;
+    }
+    item.growthStage = value.growthStage as TreeGrowthStage;
+  }
+
   return item;
+}
+
+function parseGardenZone(value: unknown): GardenZone | null {
+  if (!isRecord(value)) return null;
+  if (!isNonEmptyString(value.id)) return null;
+  if (typeof value.name !== "string") return null;
+
+  const colorId = (value.colorId ?? DEFAULT_ZONE_COLOR_ID) as ZoneColorId;
+  if (!VALID_ZONE_COLORS.includes(colorId)) return null;
+
+  const bedType = (value.bedType ?? "vegetable") as BedType;
+  if (!VALID_BED_TYPES.includes(bedType)) return null;
+
+  const borderStyle = (value.borderStyle ?? "default") as BorderStyle;
+  if (!VALID_BORDER_STYLES.includes(borderStyle)) return null;
+
+  if (
+    !isFiniteNumber(value.col) ||
+    !isFiniteNumber(value.row) ||
+    !isFiniteNumber(value.widthCells) ||
+    !isFiniteNumber(value.heightCells)
+  ) {
+    return null;
+  }
+
+  if (
+    value.col < 0 ||
+    value.row < 0 ||
+    value.widthCells < 1 ||
+    value.heightCells < 1
+  ) {
+    return null;
+  }
+
+  return {
+    id: value.id.trim(),
+    name: value.name.trim() || "Bed",
+    colorId,
+    bedType,
+    borderStyle,
+    col: Math.floor(value.col),
+    row: Math.floor(value.row),
+    widthCells: Math.floor(value.widthCells),
+    heightCells: Math.floor(value.heightCells),
+  };
 }
 
 function parseDimensions(value: unknown): GardenDimensions | null {
@@ -107,6 +185,16 @@ export function parseGarden(value: unknown): Garden | null {
     items.push(item);
   }
 
+  const zones: GardenZone[] = [];
+  if (value.zones !== undefined) {
+    if (!Array.isArray(value.zones)) return null;
+    for (const rawZone of value.zones) {
+      const zone = parseGardenZone(rawZone);
+      if (!zone) return null;
+      zones.push(zone);
+    }
+  }
+
   const now = new Date().toISOString();
   const createdAt =
     typeof value.createdAt === "string" ? value.createdAt : now;
@@ -118,6 +206,7 @@ export function parseGarden(value: unknown): Garden | null {
     name: value.name.trim() || "Untitled garden",
     shape,
     dimensions,
+    zones,
     items,
     createdAt,
     updatedAt,
