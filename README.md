@@ -57,9 +57,9 @@ anyone can build and manage their own digital garden.
 - localStorage auto-save
 
 ### Phase 3 — Care & Alerts
-- [ ] Integrate regional climate data API
-- [ ] Personalized care reminders per plant (watering, fertilizing, etc.)
-- [ ] Natural disaster preparation alerts
+- [x] Integrate regional climate data API
+- [x] Personalized care reminders per plant (watering, fertilizing, etc.)
+- [x] Natural disaster preparation alerts
 
 ### Phase 4 — AI Agent
 - [ ] AI Q&A based on user's garden data
