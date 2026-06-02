@@ -70,6 +70,22 @@ function parsePlant(value: unknown): Plant | null {
     plant.emoji = value.emoji.trim();
   }
 
+  if (Array.isArray(value.goodNeighbors)) {
+    plant.goodNeighbors = value.goodNeighbors.filter(
+      (id): id is string => typeof id === "string",
+    );
+  } else {
+    plant.goodNeighbors = [];
+  }
+
+  if (Array.isArray(value.badNeighbors)) {
+    plant.badNeighbors = value.badNeighbors.filter(
+      (id): id is string => typeof id === "string",
+    );
+  } else {
+    plant.badNeighbors = [];
+  }
+
   if (value.growth !== undefined && isRecord(value.growth)) {
     const g = value.growth;
     if (

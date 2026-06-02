@@ -1,8 +1,10 @@
 "use client";
 
 import { useDraggable } from "@dnd-kit/core";
-import { Sprout, X } from "lucide-react";
+import { AlertTriangle, Sprout, X } from "lucide-react";
+import { useState } from "react";
 
+import { PlantCompatibilityTooltip } from "@/components/garden/PlantCompatibilityTooltip";
 import { PlantGridTile } from "@/components/garden/PlantGridTile";
 import { placedDraggableId } from "@/lib/garden/dnd";
 import {
@@ -16,6 +18,7 @@ import { getPlantById } from "@/lib/plants/registry";
 type DraggablePlacedPlantProps = {
   item: PlacedItem;
   span: number;
+  hasConflict?: boolean;
   onRemove?: (itemId: string) => void;
   onGrow?: (itemId: string) => void;
 };
@@ -23,6 +26,7 @@ type DraggablePlacedPlantProps = {
 export function DraggablePlacedPlant({
   item,
   span,
+  hasConflict = false,
   onRemove,
   onGrow,
 }: DraggablePlacedPlantProps) {
@@ -32,6 +36,15 @@ export function DraggablePlacedPlant({
   const subtitle =
     plant && stage ? formatTreeStageLine(plant, stage) : undefined;
   const canGrow = stage ? getNextTreeStage(stage) !== null : false;
+
+  const [showCompat, setShowCompat] = useState(false);
+  const [pinnedCompat, setPinnedCompat] = useState(false);
+
+  const compatVisible =
+    plant &&
+    (showCompat || pinnedCompat) &&
+    ((plant.goodNeighbors?.length ?? 0) > 0 ||
+      (plant.badNeighbors?.length ?? 0) > 0);
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: placedDraggableId(item.id),
@@ -45,16 +58,39 @@ export function DraggablePlacedPlant({
         gridColumn: `${item.position.col + 1} / span ${span}`,
         gridRow: `${item.position.row + 1} / span ${span}`,
       }}
+      onMouseEnter={() => plant && setShowCompat(true)}
+      onMouseLeave={() => {
+        if (!pinnedCompat) setShowCompat(false);
+      }}
     >
+      {hasConflict ? (
+        <span
+          className="absolute -top-1 -left-1 z-30 flex size-5 items-center justify-center rounded-full bg-amber-500 text-white shadow-md"
+          title="Bad neighbor in this bed"
+          aria-label="Companion planting warning"
+        >
+          <AlertTriangle className="size-3" strokeWidth={2.5} aria-hidden />
+        </span>
+      ) : null}
+
+      {plant &&
+      ((plant.goodNeighbors?.length ?? 0) > 0 ||
+        (plant.badNeighbors?.length ?? 0) > 0) ? (
+        <PlantCompatibilityTooltip plant={plant} visible={!!compatVisible} />
+      ) : null}
+
       <div
         ref={setNodeRef}
         {...listeners}
         {...attributes}
+        onClick={() => {
+          if (plant) setPinnedCompat((value) => !value);
+        }}
         title={`${label} — drag to move`}
         aria-label={`Move ${label}`}
         className={`size-full cursor-grab touch-none active:cursor-grabbing ${
           isDragging ? "opacity-30" : ""
-        }`}
+        } ${hasConflict ? "ring-2 ring-amber-500/80 ring-offset-1 ring-offset-transparent rounded-2xl" : ""}`}
       >
         <PlantGridTile
           label={label}

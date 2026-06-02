@@ -1,3 +1,4 @@
+import { getCompatibilityForPlant } from "@/lib/plants/compatibility-data";
 import type { Plant, PlantCategory } from "@/types/plant";
 
 export type CatalogPlant = Plant & {
@@ -27,7 +28,13 @@ function entry(
     rest.name,
     rest.scientificName ?? "",
   ].filter(Boolean);
-  return { ...rest, searchTerms: terms };
+  const compat = getCompatibilityForPlant(rest.id);
+  return {
+    ...rest,
+    goodNeighbors: rest.goodNeighbors ?? compat.goodNeighbors,
+    badNeighbors: rest.badNeighbors ?? compat.badNeighbors,
+    searchTerms: terms,
+  };
 }
 
 const VEGETABLE_ENTRIES: CatalogPlant[] = [

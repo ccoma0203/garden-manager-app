@@ -518,6 +518,7 @@ export function GardenEditorWorkspace({
             </p>
             <CareAlertsPanel
               items={garden.items}
+              zones={garden.zones}
               region={region}
               weather={weather}
               weatherLoading={weatherLoading}

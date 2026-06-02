@@ -3,13 +3,14 @@
 import { useMemo, useState } from "react";
 import { Trash2 } from "lucide-react";
 
+import { CompatibilityReferencePanel } from "@/components/garden/CompatibilityReferencePanel";
 import { CustomPlantCreator } from "@/components/garden/CustomPlantCreator";
 import {
   FLOWER_PLANTS,
   TREE_PLANTS,
   VEGETABLE_PLANTS,
 } from "@/lib/plants/catalog";
-import { getPlantsByCategory, isCustomPlantId } from "@/lib/plants/registry";
+import { isCustomPlantId } from "@/lib/plants/registry";
 import type { CustomPlantDraft } from "@/lib/plants/custom-plant";
 import type { Plant, PlantCategory } from "@/types/plant";
 
@@ -151,12 +152,7 @@ export function PlantPalette({
         })}
       </ul>
 
-      <p className="text-[10px] text-muted-foreground">
-        {getPlantsByCategory(tab).length} plants in {tab} tab
-        {tab === "vegetable" || tab === "flower" || tab === "tree"
-          ? " (built-in + custom)"
-          : ""}
-      </p>
+      <CompatibilityReferencePanel />
     </div>
   );
 }

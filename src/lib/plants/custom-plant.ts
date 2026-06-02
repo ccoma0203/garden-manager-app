@@ -138,6 +138,8 @@ export function createCustomPlant(draft: CustomPlantDraft): Plant {
       draft.wateringIntervalDays ?? defaults.wateringIntervalDays,
     minTempC: draft.minTempC ?? defaults.minTempC,
     isCustom: true,
+    goodNeighbors: [],
+    badNeighbors: [],
   };
 
   if (category === "tree") {

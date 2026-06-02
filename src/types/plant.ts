@@ -42,6 +42,10 @@ export type Plant = {
   growth?: TreeGrowthProfile;
   /** User-created plant stored in localStorage. */
   isCustom?: boolean;
+  /** Plant ids that grow well nearby (companion planting). */
+  goodNeighbors?: PlantId[];
+  /** Plant ids to keep separated in the same bed. */
+  badNeighbors?: PlantId[];
 };
 
 export type Tool = {

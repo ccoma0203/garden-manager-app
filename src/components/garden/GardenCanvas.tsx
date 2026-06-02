@@ -1,9 +1,13 @@
 "use client";
 
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useMemo, useState } from "react";
 
 import { DraggablePlacedPlant } from "@/components/garden/DraggablePlacedPlant";
 import { ResizableGardenZone } from "@/components/garden/ResizableGardenZone";
+import {
+  conflictingItemIds,
+  findBedNeighborConflicts,
+} from "@/lib/garden/compatibility";
 import { getGridSize, spanForPlacedItem } from "@/lib/garden/grid";
 import { MIN_ZONE_CELLS } from "@/lib/garden/zone-resize";
 import {
@@ -48,6 +52,15 @@ export const GardenCanvas = forwardRef<HTMLDivElement, GardenCanvasProps>(
       gridTemplateColumns: `repeat(${cols}, 1fr)`,
       gridTemplateRows: `repeat(${rows}, 1fr)`,
     };
+
+    const conflictItemIds = useMemo(() => {
+      const conflicts = findBedNeighborConflicts(
+        garden.items,
+        garden.zones,
+        (item) => spanForPlacedItem(item, getPlantById),
+      );
+      return conflictingItemIds(conflicts);
+    }, [garden.items, garden.zones]);
 
     const previewRect =
       drawStart && drawEnd ? rectFromCorners(drawStart, drawEnd) : null;
@@ -167,6 +180,7 @@ export const GardenCanvas = forwardRef<HTMLDivElement, GardenCanvasProps>(
                   key={item.id}
                   item={item}
                   span={span}
+                  hasConflict={conflictItemIds.has(item.id)}
                   onRemove={onRemoveItem}
                   onGrow={onGrowItem}
                 />
