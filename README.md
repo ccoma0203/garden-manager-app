@@ -41,13 +41,25 @@ anyone can build and manage their own digital garden.
 ### Phase 2 — Placement & Commerce
 - [x] Build plant and tool catalog
 - [x] Drag-and-drop virtual placement feature
-- [ ] Plant compatibility info (good neighbors vs. bad neighbors)
+- [x] Plant compatibility info (good neighbors vs. bad neighbors)
 - [ ] Placement → purchase flow (external links first, own commerce later)
 
+## ✅ Currently Built (MVP)
+- Interactive garden grid with resizable beds
+- Bed types with soil colors: 🥕 Vegetable, 🌸 Flower, 🌳 Tree
+- Border styles: 🪵 Wooden Fence, 🧱 Brick Wall, 🪨 Stone Edge
+- Plant catalog: vegetables, flowers, trees (20+ plants)
+- Tree growth stages: 🌱 Seedling → 🌿 Young → 🌳 Mature
+- Custom plant registration with built-in database (50+ plants)
+- AI integration stub ready for Claude API
+- Real-time weather alerts via Open-Meteo API
+- Region setting (Korean cities supported)
+- localStorage auto-save
+
 ### Phase 3 — Care & Alerts
-- [ ] Integrate regional climate data API
-- [ ] Personalized care reminders per plant (watering, fertilizing, etc.)
-- [ ] Natural disaster preparation alerts
+- [x] Integrate regional climate data API
+- [x] Personalized care reminders per plant (watering, fertilizing, etc.)
+- [x] Natural disaster preparation alerts
 
 ### Phase 4 — AI Agent
 - [ ] AI Q&A based on user's garden data
