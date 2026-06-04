@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 
 import { CompatibilityReferencePanel } from "@/components/garden/CompatibilityReferencePanel";
 import { CustomPlantCreator } from "@/components/garden/CustomPlantCreator";
+import ShopPanel from "@/components/garden/ShopPanel";
 import {
   FLOWER_PLANTS,
   TREE_PLANTS,
@@ -13,6 +14,8 @@ import {
 import { isCustomPlantId } from "@/lib/plants/registry";
 import type { CustomPlantDraft } from "@/lib/plants/custom-plant";
 import type { Plant, PlantCategory } from "@/types/plant";
+
+type TabId = PlantCategory | "shop";
 
 type PlantPaletteProps = {
   onSelectPlant?: (plant: Plant) => void;
@@ -23,10 +26,11 @@ type PlantPaletteProps = {
   onDeleteCustomPlant: (id: string) => void;
 };
 
-const TABS: { id: PlantCategory; label: string }[] = [
-  { id: "vegetable", label: "Vegetables" },
-  { id: "flower", label: "Flowers" },
-  { id: "tree", label: "Trees" },
+const TABS: { id: TabId; label: string }[] = [
+  { id: "vegetable", label: "🥕 Vegetables" },
+  { id: "flower", label: "🌸 Flowers" },
+  { id: "tree", label: "🌳 Trees" },
+  { id: "shop", label: "🛒 Shop" },
 ];
 
 function builtinForTab(tab: PlantCategory): Plant[] {
@@ -49,25 +53,30 @@ export function PlantPalette({
   onSaveCustomPlant,
   onDeleteCustomPlant,
 }: PlantPaletteProps) {
-  const [tab, setTab] = useState<PlantCategory>("vegetable");
+  const [tab, setTab] = useState<TabId>("vegetable");
 
   const plants = useMemo(() => {
+    if (tab === "shop") return [];
     const builtins = builtinForTab(tab);
     const custom = customPlants.filter((plant) => plant.category === tab);
     return [...builtins, ...custom];
   }, [tab, customPlants]);
 
-  const customInTab = customPlants.filter((p) => p.category === tab);
+  const customInTab = tab !== "shop"
+    ? customPlants.filter((p) => p.category === tab)
+    : [];
 
   return (
     <div className="flex flex-col gap-3">
-      <CustomPlantCreator
-        disabled={disabled}
-        onSave={(draft) => {
-          onSaveCustomPlant(draft);
-          if (draft.category) setTab(draft.category);
-        }}
-      />
+      {tab !== "shop" && (
+        <CustomPlantCreator
+          disabled={disabled}
+          onSave={(draft) => {
+            onSaveCustomPlant(draft);
+            if (draft.category) setTab(draft.category);
+          }}
+        />
+      )}
 
       <div
         className="flex rounded-lg border border-border p-0.5"
@@ -92,67 +101,72 @@ export function PlantPalette({
         ))}
       </div>
 
-      {disabled && disabledMessage ? (
-        <p className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
-          {disabledMessage}
-        </p>
-      ) : null}
+      {tab === "shop" ? (
+        <ShopPanel />
+      ) : (
+        <>
+          {disabled && disabledMessage ? (
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+              {disabledMessage}
+            </p>
+          ) : null}
 
-      {customInTab.length > 0 ? (
-        <p className="text-xs text-muted-foreground">
-          Your custom plants ({customInTab.length}) appear below the built-in
-          list.
-        </p>
-      ) : null}
+          {customInTab.length > 0 ? (
+            <p className="text-xs text-muted-foreground">
+              Your custom plants ({customInTab.length}) appear below the built-in list.
+            </p>
+          ) : null}
 
-      <ul className="flex max-h-[min(50vh,420px)] flex-col gap-2 overflow-y-auto" role="tabpanel">
-        {plants.map((plant) => {
-          const isCustom = plant.isCustom ?? isCustomPlantId(plant.id);
-          return (
-            <li key={plant.id}>
-              <div className="flex gap-1">
-                <button
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => onSelectPlant?.(plant)}
-                  className="flex min-w-0 flex-1 flex-col rounded-lg border border-border bg-card px-3 py-2.5 text-left text-sm transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <span className="flex items-center gap-2 font-medium">
-                    <span aria-hidden className="text-xl leading-none">
-                      {plant.emoji ?? "🌱"}
-                    </span>
-                    {plant.name}
-                    {isCustom ? (
-                      <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">
-                        Custom
+          <ul className="flex max-h-[min(50vh,420px)] flex-col gap-2 overflow-y-auto" role="tabpanel">
+            {plants.map((plant) => {
+              const isCustom = plant.isCustom ?? isCustomPlantId(plant.id);
+              return (
+                <li key={plant.id}>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => onSelectPlant?.(plant)}
+                      className="flex min-w-0 flex-1 flex-col rounded-lg border border-border bg-card px-3 py-2.5 text-left text-sm transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <span className="flex items-center gap-2 font-medium">
+                        <span aria-hidden className="text-xl leading-none">
+                          {plant.emoji ?? "🌱"}
+                        </span>
+                        {plant.name}
+                        {isCustom ? (
+                          <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">
+                            Custom
+                          </span>
+                        ) : null}
                       </span>
+                      <span className="mt-0.5 text-xs text-muted-foreground">
+                        {plant.category === "tree"
+                          ? `${plant.sun} sun · ${plant.water} water · up to ${plant.heightM}m · starts 🌱 seedling`
+                          : `${plant.sun} sun · ${plant.water} water · ~${plant.spreadM} m spread`}
+                      </span>
+                    </button>
+                    {isCustom ? (
+                      <button
+                        type="button"
+                        disabled={disabled}
+                        title={`Remove ${plant.name} from palette`}
+                        aria-label={`Delete custom plant ${plant.name}`}
+                        onClick={() => onDeleteCustomPlant(plant.id)}
+                        className="flex shrink-0 items-center justify-center rounded-lg border border-border px-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                      >
+                        <Trash2 className="size-4" aria-hidden />
+                      </button>
                     ) : null}
-                  </span>
-                  <span className="mt-0.5 text-xs text-muted-foreground">
-                    {plant.category === "tree"
-                      ? `${plant.sun} sun · ${plant.water} water · up to ${plant.heightM}m · starts 🌱 seedling`
-                      : `${plant.sun} sun · ${plant.water} water · ~${plant.spreadM} m spread`}
-                  </span>
-                </button>
-                {isCustom ? (
-                  <button
-                    type="button"
-                    disabled={disabled}
-                    title={`Remove ${plant.name} from palette`}
-                    aria-label={`Delete custom plant ${plant.name}`}
-                    onClick={() => onDeleteCustomPlant(plant.id)}
-                    className="flex shrink-0 items-center justify-center rounded-lg border border-border px-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
-                  >
-                    <Trash2 className="size-4" aria-hidden />
-                  </button>
-                ) : null}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
 
-      <CompatibilityReferencePanel />
+          <CompatibilityReferencePanel />
+        </>
+      )}
     </div>
   );
 }
