@@ -74,3 +74,6 @@ anyone can build and manage their own digital garden.
 - Climate data: Korea Meteorological Administration API
 - AI agent: Claude API
 - Commerce: External API → own platform
+
+## Portfolio Link
+- https://www.figma.com/slides/x6fptJXXuqkxaZWRel3FNy
