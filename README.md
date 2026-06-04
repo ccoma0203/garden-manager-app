@@ -42,7 +42,7 @@ anyone can build and manage their own digital garden.
 - [x] Build plant and tool catalog
 - [x] Drag-and-drop virtual placement feature
 - [x] Plant compatibility info (good neighbors vs. bad neighbors)
-- [ ] Placement → purchase flow (external links first, own commerce later)
+- [x] Placement → purchase flow (external links first, own commerce later)
 
 ## ✅ Currently Built (MVP)
 - Interactive garden grid with resizable beds
