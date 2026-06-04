@@ -62,27 +62,25 @@ export function useGardenEditor({ gardenId }: UseGardenEditorOptions) {
 
   const persistGarden = useCallback(
     (updater: (prev: Garden) => Garden) => {
-      let didSave = false;
-
       setGarden((prev) => {
         if (!prev) return prev;
-
+  
         const next = updater(prev);
         const result = saveGarden(next);
-
+  
         if (result.success) {
-          didSave = true;
+          setTimeout(() => {
+            setStorageError(null);
+            flashSaved();
+          }, 0);
           return result.garden;
         }
-
-        setStorageError(result.error);
+  
+        setTimeout(() => {
+          setStorageError(result.error);
+        }, 0);
         return prev;
       });
-
-      if (didSave) {
-        setStorageError(null);
-        flashSaved();
-      }
     },
     [flashSaved],
   );
@@ -109,6 +107,13 @@ export function useGardenEditor({ gardenId }: UseGardenEditorOptions) {
     [persistGarden],
   );
 
+  const updateGroundCover = useCallback(
+    (groundCover: import("@/types/garden").GroundCoverType) => {
+      persistGarden((prev) => ({ ...prev, groundCover }));
+    },
+    [persistGarden],
+  );
+
   const removeGarden = useCallback(() => {
     if (!gardenId?.trim()) return;
     deleteStoredGarden(gardenId.trim());
@@ -124,6 +129,7 @@ export function useGardenEditor({ gardenId }: UseGardenEditorOptions) {
     justSaved,
     updateItems,
     updateZones,
+    updateGroundCover,
     removeGarden,
   };
 }

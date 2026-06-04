@@ -14,6 +14,7 @@ import { useCallback, useRef, useState } from "react";
 
 import { CareAlertsPanel } from "@/components/garden/CareAlertsPanel";
 import { GardenCanvas } from "@/components/garden/GardenCanvas";
+import { GroundCoverSelector } from "@/components/garden/GroundCoverSelector";
 import { RegionSettings } from "@/components/garden/RegionSettings";
 import { WeatherWidget } from "@/components/garden/WeatherWidget";
 import { PlantGridTile } from "@/components/garden/PlantGridTile";
@@ -54,7 +55,7 @@ import {
 } from "@/lib/garden/zones";
 import { useRegion } from "@/hooks/useRegion";
 import { useWeather } from "@/hooks/useWeather";
-import type { BedType, BorderStyle, Garden, GardenZone, PlacedItem } from "@/types/garden";
+import type { BedType, BorderStyle, Garden, GardenZone, GroundCoverType, PlacedItem } from "@/types/garden";
 import { getPlantById } from "@/lib/plants/registry";
 import type { CustomPlantDraft } from "@/lib/plants/custom-plant";
 import type { Plant } from "@/types/plant";
@@ -63,6 +64,7 @@ type GardenEditorWorkspaceProps = {
   garden: Garden;
   onItemsChange: (items: PlacedItem[]) => void;
   onZonesChange: (zones: GardenZone[]) => void;
+  onGroundCoverChange: (groundCover: GroundCoverType) => void;
   justSaved?: boolean;
   customPlants: Plant[];
   onSaveCustomPlant: (draft: CustomPlantDraft) => void;
@@ -129,6 +131,7 @@ export function GardenEditorWorkspace({
   garden,
   onItemsChange,
   onZonesChange,
+  onGroundCoverChange,
   justSaved = false,
   customPlants,
   onSaveCustomPlant,
@@ -522,6 +525,17 @@ export function GardenEditorWorkspace({
               region={region}
               weather={weather}
               weatherLoading={weatherLoading}
+            />
+          </section>
+
+          <section>
+            <h2 className="mb-1 text-sm font-medium">Ground Cover</h2>
+            <p className="mb-3 text-xs text-muted-foreground">
+              배경 지면 타입을 선택하세요. 잔디, 자갈, 잡초 방지 매트 등.
+            </p>
+            <GroundCoverSelector
+              value={garden.groundCover ?? "bare-soil"}
+              onChange={onGroundCoverChange}
             />
           </section>
 

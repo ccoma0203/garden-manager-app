@@ -216,6 +216,13 @@ export function parseGarden(value: unknown): Garden | null {
     garden.photoUrl = value.photoUrl.trim();
   }
 
+  const VALID_GROUND_COVERS = ["bare-soil", "lawn", "weed-mat", "gravel"];
+  if (typeof value.groundCover === "string" && VALID_GROUND_COVERS.includes(value.groundCover)) {
+    garden.groundCover = value.groundCover as import("@/types/garden").GroundCoverType;
+  } else {
+    garden.groundCover = "bare-soil";
+  }
+
   return garden;
 }
 

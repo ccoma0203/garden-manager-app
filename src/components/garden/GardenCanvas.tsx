@@ -113,10 +113,15 @@ export const GardenCanvas = forwardRef<HTMLDivElement, GardenCanvasProps>(
 
     return (
       <div
-        className="relative min-h-[320px] overflow-hidden rounded-xl border border-border bg-muted/30"
+        className="relative min-h-[320px] overflow-hidden rounded-xl border border-border"
         style={{
           aspectRatio: `${width} / ${height}`,
           maxHeight: "min(75vh, 640px)",
+          backgroundColor:
+            garden.groundCover === "lawn" ? "#90EE90" :
+            garden.groundCover === "weed-mat" ? "#6B7280" :
+            garden.groundCover === "gravel" ? "#C4A882" :
+            "#D4B896",
         }}
         aria-label={`Garden plot ${width}×${height} ${unit}`}
       >

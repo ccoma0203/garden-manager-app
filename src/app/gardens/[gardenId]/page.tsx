@@ -19,6 +19,7 @@ export default function GardenEditorPage() {
     justSaved,
     updateItems,
     updateZones,
+    updateGroundCover,
   } = useGardenEditor({ gardenId });
   const { customPlants, savePlant, removePlant } = useCustomPlants();
 
@@ -70,6 +71,7 @@ export default function GardenEditorPage() {
           garden={garden}
           onItemsChange={updateItems}
           onZonesChange={updateZones}
+          onGroundCoverChange={updateGroundCover}
           justSaved={justSaved}
           customPlants={customPlants}
           onSaveCustomPlant={savePlant}
