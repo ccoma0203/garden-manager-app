@@ -111,10 +111,20 @@ export const GardenCanvas = forwardRef<HTMLDivElement, GardenCanvasProps>(
       }
     };
 
-    return (
-      <div
-        className="relative min-h-[320px] overflow-hidden rounded-xl border border-border"
-        style={{
+    // 세로 정원 대응: 가로보다 세로가 길면 높이 기준으로 제한
+    const isPortrait = height > width;
+    const containerStyle = isPortrait
+      ? {
+          aspectRatio: `${width} / ${height}`,
+          maxHeight: "min(75vh, 640px)",
+          width: "auto",
+          backgroundColor:
+            garden.groundCover === "lawn" ? "#90EE90" :
+            garden.groundCover === "weed-mat" ? "#6B7280" :
+            garden.groundCover === "gravel" ? "#C4A882" :
+            "#D4B896",
+        }
+      : {
           aspectRatio: `${width} / ${height}`,
           maxHeight: "min(75vh, 640px)",
           backgroundColor:
@@ -122,7 +132,12 @@ export const GardenCanvas = forwardRef<HTMLDivElement, GardenCanvasProps>(
             garden.groundCover === "weed-mat" ? "#6B7280" :
             garden.groundCover === "gravel" ? "#C4A882" :
             "#D4B896",
-        }}
+        };
+
+    return (
+      <div
+        className={`relative overflow-hidden rounded-xl border border-border ${isPortrait ? "mx-auto" : "w-full"}`}
+        style={containerStyle}
         aria-label={`Garden plot ${width}×${height} ${unit}`}
       >
         <div
@@ -185,6 +200,7 @@ export const GardenCanvas = forwardRef<HTMLDivElement, GardenCanvasProps>(
                   key={item.id}
                   item={item}
                   span={span}
+                  gridRows={rows}
                   hasConflict={conflictItemIds.has(item.id)}
                   onRemove={onRemoveItem}
                   onGrow={onGrowItem}
