@@ -37,41 +37,29 @@ export function ResizableGardenZone({
 }: ResizableGardenZoneProps) {
   const [preview, setPreview] = useState<GardenZone | null>(null);
   const [activeHandle, setActiveHandle] = useState<ResizeHandle | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartCell, setDragStartCell] = useState<GridPosition | null>(null);
 
   const display = preview ?? zone;
   const bedVisual = getBedVisual(display.bedType);
   const borderVisual = getBorderVisual(display.borderStyle);
 
+  // 리사이즈 핸들 드래그
   const handleResizePointerDown = useCallback(
     (handle: ResizeHandle) => (event: React.PointerEvent<HTMLDivElement>) => {
       if (disabled) return;
       event.preventDefault();
       event.stopPropagation();
 
-      const gridEl = event.currentTarget.closest("[data-garden-grid]") as
-        | HTMLElement
-        | null;
+      const gridEl = event.currentTarget.closest("[data-garden-grid]") as HTMLElement | null;
       if (!gridEl) return;
 
       event.currentTarget.setPointerCapture(event.pointerId);
       setActiveHandle(handle);
 
       const onMove = (moveEvent: PointerEvent) => {
-        const cell = pointerToCell(
-          moveEvent.clientX,
-          moveEvent.clientY,
-          gridEl,
-        );
-        setPreview(
-          resizeZoneFromPointer(
-            zone,
-            handle,
-            cell.col,
-            cell.row,
-            gridCols,
-            gridRows,
-          ),
-        );
+        const cell = pointerToCell(moveEvent.clientX, moveEvent.clientY, gridEl);
+        setPreview(resizeZoneFromPointer(zone, handle, cell.col, cell.row, gridCols, gridRows));
       };
 
       const onUp = (upEvent: PointerEvent) => {
@@ -80,14 +68,7 @@ export function ResizableGardenZone({
         gridEl.removeEventListener("pointercancel", onUp);
 
         const cell = pointerToCell(upEvent.clientX, upEvent.clientY, gridEl);
-        const finalZone = resizeZoneFromPointer(
-          zone,
-          handle,
-          cell.col,
-          cell.row,
-          gridCols,
-          gridRows,
-        );
+        const finalZone = resizeZoneFromPointer(zone, handle, cell.col, cell.row, gridCols, gridRows);
 
         setPreview(null);
         setActiveHandle(null);
@@ -99,16 +80,58 @@ export function ResizableGardenZone({
       gridEl.addEventListener("pointercancel", onUp);
 
       const cell = pointerToCell(event.clientX, event.clientY, gridEl);
-      setPreview(
-        resizeZoneFromPointer(
-          zone,
-          handle,
-          cell.col,
-          cell.row,
-          gridCols,
-          gridRows,
-        ),
-      );
+      setPreview(resizeZoneFromPointer(zone, handle, cell.col, cell.row, gridCols, gridRows));
+    },
+    [disabled, gridCols, gridRows, onResizeCommit, pointerToCell, zone],
+  );
+
+  // Bed 드래그 이동
+  const handleMovePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (disabled) return;
+      if ((event.target as HTMLElement).closest("[data-resize-handle]")) return;
+      event.preventDefault();
+      event.stopPropagation();
+
+      const gridEl = event.currentTarget.closest("[data-garden-grid]") as HTMLElement | null;
+      if (!gridEl) return;
+
+      const startCell = pointerToCell(event.clientX, event.clientY, gridEl);
+      setDragStartCell(startCell);
+      setIsDragging(true);
+
+      const onMove = (moveEvent: PointerEvent) => {
+        const currentCell = pointerToCell(moveEvent.clientX, moveEvent.clientY, gridEl);
+        const deltaCol = currentCell.col - startCell.col;
+        const deltaRow = currentCell.row - startCell.row;
+
+        const newCol = Math.max(0, Math.min(gridCols - zone.widthCells, zone.col + deltaCol));
+        const newRow = Math.max(0, Math.min(gridRows - zone.heightCells, zone.row + deltaRow));
+
+        setPreview({ ...zone, col: newCol, row: newRow });
+      };
+
+      const onUp = (upEvent: PointerEvent) => {
+        gridEl.removeEventListener("pointermove", onMove);
+        gridEl.removeEventListener("pointerup", onUp);
+        gridEl.removeEventListener("pointercancel", onUp);
+
+        const currentCell = pointerToCell(upEvent.clientX, upEvent.clientY, gridEl);
+        const deltaCol = currentCell.col - startCell.col;
+        const deltaRow = currentCell.row - startCell.row;
+
+        const newCol = Math.max(0, Math.min(gridCols - zone.widthCells, zone.col + deltaCol));
+        const newRow = Math.max(0, Math.min(gridRows - zone.heightCells, zone.row + deltaRow));
+
+        setPreview(null);
+        setIsDragging(false);
+        setDragStartCell(null);
+        onResizeCommit({ ...zone, col: newCol, row: newRow });
+      };
+
+      gridEl.addEventListener("pointermove", onMove);
+      gridEl.addEventListener("pointerup", onUp);
+      gridEl.addEventListener("pointercancel", onUp);
     },
     [disabled, gridCols, gridRows, onResizeCommit, pointerToCell, zone],
   );
@@ -122,16 +145,17 @@ export function ResizableGardenZone({
       }}
     >
       <div
-        className={`pointer-events-none absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-md p-2 ${borderVisual.className} ${
-          activeHandle ? "ring-2 ring-primary ring-offset-1" : ""
-        }`}
+        className={`absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-md p-2 ${borderVisual.className} ${
+          activeHandle || isDragging ? "ring-2 ring-primary ring-offset-1" : ""
+        } ${!disabled ? "cursor-move" : "pointer-events-none"}`}
         style={{
           backgroundColor: bedVisual.soilColor,
           backgroundImage: bedVisual.soilTexture,
           ...borderVisual.style,
         }}
+        onPointerDown={!disabled ? handleMovePointerDown : undefined}
       >
-        <span className="rounded-md bg-black/25 px-2 py-1 text-center text-xs font-semibold leading-tight text-white shadow-sm sm:text-sm">
+        <span className="pointer-events-none rounded-md bg-black/25 px-2 py-1 text-center text-xs font-semibold leading-tight text-white shadow-sm sm:text-sm">
           {getZoneDisplayLabel(display)}
         </span>
       </div>
@@ -140,6 +164,7 @@ export function ResizableGardenZone({
         ? RESIZE_HANDLES.map(({ handle, className, cursor, title }) => (
             <div
               key={handle}
+              data-resize-handle
               role="separator"
               aria-orientation={
                 handle === "n" || handle === "s" ? "horizontal" : "vertical"
