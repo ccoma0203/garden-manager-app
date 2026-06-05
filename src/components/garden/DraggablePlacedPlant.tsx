@@ -21,6 +21,7 @@ type DraggablePlacedPlantProps = {
   hasConflict?: boolean;
   onRemove?: (itemId: string) => void;
   onGrow?: (itemId: string) => void;
+  gridRows?: number;
 };
 
 export function DraggablePlacedPlant({
@@ -29,6 +30,7 @@ export function DraggablePlacedPlant({
   hasConflict = false,
   onRemove,
   onGrow,
+  gridRows = 10,
 }: DraggablePlacedPlantProps) {
   const plant = item.plantId ? getPlantById(item.plantId) : undefined;
   const label = plant?.name ?? (item.kind === "tool" ? "Tool" : "Plant");
@@ -45,6 +47,9 @@ export function DraggablePlacedPlant({
     (showCompat || pinnedCompat) &&
     ((plant.goodNeighbors?.length ?? 0) > 0 ||
       (plant.badNeighbors?.length ?? 0) > 0);
+
+  // 그리드 상단 40% 이내면 아래로 툴팁 표시
+  const gridRowRatio = gridRows > 0 ? item.position.row / gridRows : 0.5;
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: placedDraggableId(item.id),
@@ -76,7 +81,11 @@ export function DraggablePlacedPlant({
       {plant &&
       ((plant.goodNeighbors?.length ?? 0) > 0 ||
         (plant.badNeighbors?.length ?? 0) > 0) ? (
-        <PlantCompatibilityTooltip plant={plant} visible={!!compatVisible} />
+        <PlantCompatibilityTooltip
+          plant={plant}
+          visible={!!compatVisible}
+          gridRowRatio={gridRowRatio}
+        />
       ) : null}
 
       <div
