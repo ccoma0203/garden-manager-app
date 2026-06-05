@@ -145,6 +145,17 @@ export function PlantPalette({
                           ? `${plant.sun} sun · ${plant.water} water · up to ${plant.heightM}m · starts 🌱 seedling`
                           : `${plant.sun} sun · ${plant.water} water · ~${plant.spreadM} m spread`}
                       </span>
+                      {plant.buyUrl ? (
+                        <a
+                          href={plant.buyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-1 inline-block text-xs text-emerald-600 underline hover:text-emerald-800"
+                        >
+                          🛒 구매하기
+                        </a>
+                      ) : null}
                     </button>
                     {isCustom ? (
                       <button

@@ -44,6 +44,8 @@ export type Plant = {
   isCustom?: boolean;
   /** Plant ids that grow well nearby (companion planting). */
   goodNeighbors?: PlantId[];
+  /** Purchase link for this plant. */
+  buyUrl?: string;
   /** Plant ids to keep separated in the same bed. */
   badNeighbors?: PlantId[];
 };

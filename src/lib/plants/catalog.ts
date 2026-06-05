@@ -19,6 +19,37 @@ function treeGrowth(matureHeightM: number, groundSpreadM: number) {
   };
 }
 
+const BUY_URLS: Partial<Record<string, string>> = {
+  // 로즈팜
+  rose: "https://www.rosefarm.shop",
+  tulip: "https://www.rosefarm.shop",
+  cherry_blossom: "https://www.rosefarm.shop",
+  // 우리화훼종묘
+  sunflower: "https://www.wooriseed.co.kr",
+  daisy: "https://www.wooriseed.co.kr",
+  lavender: "https://www.wooriseed.co.kr",
+  marigold: "https://www.wooriseed.co.kr",
+  petunia: "https://www.wooriseed.co.kr",
+  orchid: "https://www.wooriseed.co.kr",
+  peony: "https://www.wooriseed.co.kr",
+  hydrangea: "https://www.wooriseed.co.kr",
+  lily: "https://www.wooriseed.co.kr",
+  jasmine: "https://www.wooriseed.co.kr",
+  camellia: "https://www.wooriseed.co.kr",
+  cosmos: "https://www.wooriseed.co.kr",
+  pansy: "https://www.wooriseed.co.kr",
+  daffodil: "https://www.wooriseed.co.kr",
+  iris: "https://www.wooriseed.co.kr",
+  chrysanthemum: "https://www.wooriseed.co.kr",
+  lotus: "https://www.wooriseed.co.kr",
+  hibiscus: "https://www.wooriseed.co.kr",
+  geranium: "https://www.wooriseed.co.kr",
+  begonia: "https://www.wooriseed.co.kr",
+  zinnia: "https://www.wooriseed.co.kr",
+  carnation: "https://www.wooriseed.co.kr",
+  poppy: "https://www.wooriseed.co.kr",
+};
+
 function entry(
   plant: Omit<Plant, "emoji"> & { emoji: string; searchTerms?: string[] },
 ): CatalogPlant {
@@ -29,8 +60,16 @@ function entry(
     rest.scientificName ?? "",
   ].filter(Boolean);
   const compat = getCompatibilityForPlant(rest.id);
+
+  // 야채/나무는 심폴, 꽃은 BUY_URLS 매핑
+  const buyUrl = rest.buyUrl ?? BUY_URLS[rest.id] ??
+    (rest.category === "vegetable" || rest.category === "tree"
+      ? "https://www.simpol.co.kr"
+      : undefined);
+
   return {
     ...rest,
+    buyUrl,
     goodNeighbors: rest.goodNeighbors ?? compat.goodNeighbors,
     badNeighbors: rest.badNeighbors ?? compat.badNeighbors,
     searchTerms: terms,

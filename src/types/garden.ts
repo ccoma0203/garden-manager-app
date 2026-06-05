@@ -2,14 +2,12 @@ import type { PlantId, TreeGrowthStage } from "./plant";
 
 export type { TreeGrowthStage };
 
-/** Default measurement unit for outdoor spaces. */
 export const DEFAULT_LENGTH_UNIT = "m" as const;
 
 export type LengthUnit = typeof DEFAULT_LENGTH_UNIT | "cm";
 
 export type GardenShape = "rectangle" | "l-shape" | "custom";
 
-/** Position on the garden grid (top-left cell of a tile or zone). */
 export type GridPosition = {
   col: number;
   row: number;
@@ -31,11 +29,11 @@ export type BorderStyle =
   | "brick_wall"
   | "stone_edge";
 
-/** Rectangular bed / zone on the garden grid. */
+export type GroundCoverType = "bare-soil" | "lawn" | "weed-mat" | "gravel";
+
 export type GardenZone = {
   id: string;
   name: string;
-  /** @deprecated Legacy accent; visuals use bedType. */
   colorId: ZoneColorId;
   bedType: BedType;
   borderStyle: BorderStyle;
@@ -50,13 +48,10 @@ export type PlacedItemKind = "plant" | "tool";
 export type PlacedItem = {
   id: string;
   kind: PlacedItemKind;
-  /** Catalog plant id when kind is "plant". */
   plantId?: PlantId;
-  /** Catalog tool id when kind is "tool". */
   toolId?: string;
   position: GridPosition;
   rotation?: number;
-  /** Set for trees; defaults to mature when loading legacy saves. */
   growthStage?: TreeGrowthStage;
 };
 
@@ -71,8 +66,8 @@ export type Garden = {
   name: string;
   shape: GardenShape;
   dimensions: GardenDimensions;
-  /** Optional background photo (local URL or remote). */
   photoUrl?: string;
+  groundCover?: GroundCoverType;
   zones: GardenZone[];
   items: PlacedItem[];
   createdAt: string;
@@ -104,6 +99,7 @@ export function createGarden(input: CreateGardenInput): Garden {
       unit: input.unit ?? DEFAULT_LENGTH_UNIT,
     },
     photoUrl: input.photoUrl,
+    groundCover: "bare-soil",
     zones: [],
     items: [],
     createdAt: now,
