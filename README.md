@@ -37,6 +37,7 @@ anyone can build and manage their own digital garden.
 - [x] Space input UI (width, height, shape)
 - [ ] Photo upload for space recognition (manual input first)
 - [x] Build interactive garden simulation
+- [x] Garden environment selection (outdoor/balcony/indoor)
 
 ### Phase 2 — Placement & Commerce
 - [x] Build plant and tool catalog
@@ -61,6 +62,13 @@ anyone can build and manage their own digital garden.
 - 🔀 Garden bed drag-to-move
 - 🧭 Smart compatibility tooltip (above/below based on position)
 - 🚀 Deployed on Vercel
+- 🏠 Indoor/Balcony garden mode with environment selection
+  (outdoor / balcony / indoor)
+- 🪟 Shelf-based plant placement (window, shelf, table, floor)
+  with configurable pot capacity
+- 🌡️ Environment-aware care alerts
+  (weather-based for outdoor, indoor-condition-based for
+  balcony/indoor)
 
 ### Phase 3 — Care & Alerts
 - [x] Integrate regional climate data API
