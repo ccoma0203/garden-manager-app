@@ -55,6 +55,12 @@ anyone can build and manage their own digital garden.
 - Real-time weather alerts via Open-Meteo API
 - Region setting (Korean cities supported)
 - localStorage auto-save
+- 🛒 Shop tab with tools catalog (watering, fertilizer, structure, pots)
+- 💰 Plant purchase links per plant (로즈팜 / 우리화훼종묘 / 심폴)
+- 🌿 Ground Cover system (lawn, gravel, weed-mat, bare-soil) with canvas reflection
+- 🔀 Garden bed drag-to-move
+- 🧭 Smart compatibility tooltip (above/below based on position)
+- 🚀 Deployed on Vercel
 
 ### Phase 3 — Care & Alerts
 - [x] Integrate regional climate data API
