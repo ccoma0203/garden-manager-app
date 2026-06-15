@@ -8,6 +8,8 @@ export type LengthUnit = typeof DEFAULT_LENGTH_UNIT | "cm";
 
 export type GardenShape = "rectangle" | "l-shape" | "custom";
 
+export type GardenEnvironment = "outdoor" | "balcony" | "indoor";
+
 export type GridPosition = {
   col: number;
   row: number;
@@ -31,6 +33,15 @@ export type BorderStyle =
 
 export type GroundCoverType = "bare-soil" | "lawn" | "weed-mat" | "gravel";
 
+export type ShelfType = "window" | "shelf" | "table" | "floor";
+
+export type IndoorShelf = {
+  id: string;
+  name: string;
+  shelfType: ShelfType;
+  capacity: number; // 화분 몇 개까지
+};
+
 export type GardenZone = {
   id: string;
   name: string;
@@ -53,6 +64,8 @@ export type PlacedItem = {
   position: GridPosition;
   rotation?: number;
   growthStage?: TreeGrowthStage;
+  shelfId?: string;
+  slotIndex?: number;
 };
 
 export type GardenDimensions = {
@@ -68,6 +81,9 @@ export type Garden = {
   dimensions: GardenDimensions;
   photoUrl?: string;
   groundCover?: GroundCoverType;
+  environment?: GardenEnvironment;
+  indoorShelves?: IndoorShelf[];
+  shelves?: IndoorShelf[];
   zones: GardenZone[];
   items: PlacedItem[];
   createdAt: string;
@@ -81,6 +97,7 @@ export type CreateGardenInput = {
   height: number;
   unit?: LengthUnit;
   photoUrl?: string;
+  environment?: GardenEnvironment;
 };
 
 export function createGardenId(): string {
@@ -100,6 +117,7 @@ export function createGarden(input: CreateGardenInput): Garden {
     },
     photoUrl: input.photoUrl,
     groundCover: "bare-soil",
+    environment: input.environment ?? "outdoor",
     zones: [],
     items: [],
     createdAt: now,

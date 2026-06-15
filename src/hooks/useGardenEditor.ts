@@ -114,6 +114,13 @@ export function useGardenEditor({ gardenId }: UseGardenEditorOptions) {
     [persistGarden],
   );
 
+  const updateShelves = useCallback(
+    (shelves: import("@/types/garden").IndoorShelf[]) => {
+      persistGarden((prev) => ({ ...prev, shelves }));
+    },
+    [persistGarden],
+  );
+
   const removeGarden = useCallback(() => {
     if (!gardenId?.trim()) return;
     deleteStoredGarden(gardenId.trim());
@@ -130,6 +137,7 @@ export function useGardenEditor({ gardenId }: UseGardenEditorOptions) {
     updateItems,
     updateZones,
     updateGroundCover,
+    updateShelves,
     removeGarden,
   };
 }

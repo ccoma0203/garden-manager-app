@@ -113,8 +113,11 @@ export function saveGarden(garden: Garden): SaveResult {
     return { success: false, error: "Storage is only available in the browser." };
   }
 
+  console.log("saveGarden input:", garden);
   const normalized = parseGarden(garden);
+  console.log("saveGarden normalized:", normalized);
   if (!normalized) {
+    console.log("PARSE FAILED - garden rejected");
     return { success: false, error: "Garden data is invalid and could not be saved." };
   }
 

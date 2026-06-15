@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 
 import { GardenEditorWorkspace } from "@/components/garden/GardenEditorWorkspace";
+import { IndoorEditorWorkspace } from "@/components/garden/IndoorEditorWorkspace";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ButtonLink } from "@/components/ui/button-link";
 import { useCustomPlants } from "@/hooks/useCustomPlants";
@@ -20,6 +21,7 @@ export default function GardenEditorPage() {
     updateItems,
     updateZones,
     updateGroundCover,
+    updateShelves,
   } = useGardenEditor({ gardenId });
   const { customPlants, savePlant, removePlant } = useCustomPlants();
 
@@ -55,6 +57,8 @@ export default function GardenEditorPage() {
     );
   }
 
+  const isIndoor = garden.environment === "indoor" || garden.environment === "balcony";
+
   return (
     <div className="flex min-h-full flex-col">
       <SiteHeader />
@@ -67,16 +71,29 @@ export default function GardenEditorPage() {
             {storageError}
           </p>
         ) : null}
-        <GardenEditorWorkspace
-          garden={garden}
-          onItemsChange={updateItems}
-          onZonesChange={updateZones}
-          onGroundCoverChange={updateGroundCover}
-          justSaved={justSaved}
-          customPlants={customPlants}
-          onSaveCustomPlant={savePlant}
-          onDeleteCustomPlant={removePlant}
-        />
+
+        {isIndoor ? (
+          <IndoorEditorWorkspace
+            garden={garden}
+            onItemsChange={updateItems}
+            onShelvesChange={updateShelves}
+            justSaved={justSaved}
+            customPlants={customPlants}
+            onSaveCustomPlant={savePlant}
+            onDeleteCustomPlant={removePlant}
+          />
+        ) : (
+          <GardenEditorWorkspace
+            garden={garden}
+            onItemsChange={updateItems}
+            onZonesChange={updateZones}
+            onGroundCoverChange={updateGroundCover}
+            justSaved={justSaved}
+            customPlants={customPlants}
+            onSaveCustomPlant={savePlant}
+            onDeleteCustomPlant={removePlant}
+          />
+        )}
       </main>
     </div>
   );

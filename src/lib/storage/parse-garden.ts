@@ -99,6 +99,14 @@ function parsePlacedItem(value: unknown): PlacedItem | null {
     item.growthStage = value.growthStage as TreeGrowthStage;
   }
 
+  if (typeof value.shelfId === "string") {
+    item.shelfId = value.shelfId;
+  }
+
+  if (typeof value.slotIndex === "number") {
+    item.slotIndex = value.slotIndex;
+  }
+
   return item;
 }
 
@@ -214,6 +222,33 @@ export function parseGarden(value: unknown): Garden | null {
 
   if (typeof value.photoUrl === "string" && value.photoUrl.trim()) {
     garden.photoUrl = value.photoUrl.trim();
+  }
+
+  if (typeof value.environment === "string" &&
+    ["outdoor", "balcony", "indoor"].includes(value.environment)) {
+    garden.environment = value.environment as import("@/types/garden").GardenEnvironment;
+  } else {
+    garden.environment = "outdoor";
+  }
+
+  if (Array.isArray(value.shelves)) {
+    garden.shelves = value.shelves
+      .filter((s: unknown) => {
+        if (typeof s !== "object" || s === null) return false;
+        const shelf = s as Record<string, unknown>;
+        return typeof shelf.id === "string" && typeof shelf.name === "string";
+      })
+      .map((s: unknown) => {
+        const shelf = s as Record<string, unknown>;
+        return {
+          id: String(shelf.id),
+          name: String(shelf.name),
+          shelfType: (["window", "shelf", "table", "floor"].includes(String(shelf.shelfType))
+            ? shelf.shelfType
+            : "shelf") as import("@/types/garden").IndoorShelf["shelfType"],
+          capacity: typeof shelf.capacity === "number" ? shelf.capacity : 4,
+        };
+      });
   }
 
   const VALID_GROUND_COVERS = ["bare-soil", "lawn", "weed-mat", "gravel"];
