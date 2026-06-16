@@ -27,6 +27,8 @@ type ZoneManagerProps = {
   onZonesChange: (zones: GardenZone[]) => void;
 };
 
+type AddMode = "draw" | "number";
+
 export function ZoneManager({
   zones,
   isDrawing,
@@ -40,6 +42,9 @@ export function ZoneManager({
 }: ZoneManagerProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [addMode, setAddMode] = useState<AddMode>("number");
+  const [numWidth, setNumWidth] = useState(3);
+  const [numHeight, setNumHeight] = useState(3);
 
   function startRename(zone: GardenZone) {
     setEditingId(zone.id);
@@ -70,6 +75,23 @@ export function ZoneManager({
     );
     if (!confirmed) return;
     onZonesChange(zones.filter((z) => z.id !== zone.id));
+  }
+
+  function handleAddByNumber() {
+    const w = Math.max(2, Math.min(20, numWidth));
+    const h = Math.max(2, Math.min(20, numHeight));
+    const newZone: GardenZone = {
+      id: createZoneId(),
+      name: nextDefaultZoneName(zones, pendingBedType),
+      colorId: nextZoneColorId(zones),
+      bedType: pendingBedType,
+      borderStyle: pendingBorderStyle,
+      col: 0,
+      row: 0,
+      widthCells: w,
+      heightCells: h,
+    };
+    onZonesChange([...zones, newZone]);
   }
 
   return (
@@ -118,28 +140,89 @@ export function ZoneManager({
         />
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {isDrawing ? (
-          <Button type="button" variant="outline" size="sm" onClick={onCancelDraw}>
-            Cancel drawing
-          </Button>
-        ) : (
-          <Button type="button" size="sm" onClick={onStartDraw}>
-            Draw bed
-          </Button>
-        )}
+      {/* 추가 방식 탭 */}
+      <div className="flex rounded-lg border border-border p-0.5">
+        <button
+          type="button"
+          onClick={() => { setAddMode("number"); onCancelDraw(); }}
+          className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+            addMode === "number"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          🔢 숫자로 추가
+        </button>
+        <button
+          type="button"
+          onClick={() => setAddMode("draw")}
+          className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+            addMode === "draw"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          ✏️ 직접 그리기
+        </button>
       </div>
 
-      {isDrawing ? (
-        <p className="text-xs text-muted-foreground">
-          Drag on the grid to draw a {getBedVisual(pendingBedType).typeLabel}{" "}
-          bed (min 2×2 cells).
-        </p>
-      ) : null}
+      {addMode === "number" ? (
+        <div className="flex flex-col gap-2 rounded-lg border border-border p-3">
+          <p className="text-xs text-muted-foreground">
+            Bed 크기를 셀 수로 입력하세요. 추가 후 드래그로 위치와 크기를 조절할 수 있어요.
+          </p>
+          <div className="flex items-center gap-2">
+            <label className="flex flex-col gap-1 text-xs font-medium flex-1">
+              가로 (셀)
+              <input
+                type="number"
+                min={2}
+                max={20}
+                value={numWidth}
+                onChange={(e) => setNumWidth(Number(e.target.value))}
+                className="rounded-lg border border-input bg-background px-2 py-1.5 text-sm"
+              />
+            </label>
+            <span className="mt-4 text-muted-foreground">×</span>
+            <label className="flex flex-col gap-1 text-xs font-medium flex-1">
+              세로 (셀)
+              <input
+                type="number"
+                min={2}
+                max={20}
+                value={numHeight}
+                onChange={(e) => setNumHeight(Number(e.target.value))}
+                className="rounded-lg border border-input bg-background px-2 py-1.5 text-sm"
+              />
+            </label>
+          </div>
+          <Button type="button" size="sm" onClick={handleAddByNumber}>
+            + Bed 추가
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {isDrawing ? (
+            <Button type="button" variant="outline" size="sm" onClick={onCancelDraw}>
+              Cancel drawing
+            </Button>
+          ) : (
+            <Button type="button" size="sm" onClick={onStartDraw}>
+              Draw bed
+            </Button>
+          )}
+          {isDrawing ? (
+            <p className="w-full text-xs text-muted-foreground">
+              Drag on the grid to draw a {getBedVisual(pendingBedType).typeLabel}{" "}
+              bed (min 2×2 cells).
+            </p>
+          ) : null}
+        </div>
+      )}
 
       {zones.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
-          No beds yet. Choose type and border, then draw on the grid.
+          No beds yet. Choose type and border, then add a bed.
         </p>
       ) : (
         <ul className="flex flex-col gap-2">
