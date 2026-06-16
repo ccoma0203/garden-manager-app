@@ -69,6 +69,13 @@ anyone can build and manage their own digital garden.
 - 🌡️ Environment-aware care alerts
   (weather-based for outdoor, indoor-condition-based for
   balcony/indoor)
+- 📱 Mobile app version at /mobile
+  - Bottom tab bar navigation (홈/식물/쇼핑/설정)
+  - Garden list with environment badges
+  - Plant catalog with buy links
+  - Shop page with tools catalog
+  - Settings with region configuration
+  - Links to desktop version
 
 ### Phase 3 — Care & Alerts
 - [x] Integrate regional climate data API
@@ -80,8 +87,9 @@ anyone can build and manage their own digital garden.
 - [ ] Claude API integration
 
 ### Phase 5 — Scale Up
-- [ ] Mobile app launch
+- [x] Mobile app launch
 - [ ] Build own commerce platform
+- [ ] i18n 한국어/영어 자동 전환
 
 ## 🛠️ Planned Stack
 - Space simulation: Canvas / WebGL
